@@ -19,10 +19,29 @@ $(function() {
 		
 		self.onEventSettingsUpdated = function (payload) {
             self.sidebars(self.settings.settings.plugins.sidebarorder.sidebars());
+			self.renderSideBars();
         }
 		
+		self.onAfterBinding = function(){
+			self.renderSideBars();
+		}
+		
+		self.renderSideBars = function(){
+			ko.utils.arrayForEach(self.sidebars(), function(sidebar) {
+				var sidebarid = sidebar.name();
+				if (!sidebar.showtext()){
+					$('li#'+sidebarid+'_link a,li#tab_'+sidebarid+'_link a').text('');
+				}
+				if ($('li#'+sidebarid+'_link a,li#tab_'+sidebarid+'_link a').children('i').length > 0) {
+					$('li#'+sidebarid+'_link a,li#tab_'+sidebarid+'_link a').children('i').addClass(sidebar.icon());
+				} else {
+					$('li#'+sidebarid+'_link a,li#tab_'+sidebarid+'_link a').prepend('<i class="fa '+sidebar.icon()+'"></i> ');
+				}
+			});
+		}
+		
 		self.onStartup = function(){
-			self.reloadOverlay = $("#reloadui_overlay");
+			self.renderSideBars();
 		}
 		
 		self.onDataUpdaterPluginMessage = function(plugin, data) {
@@ -67,7 +86,7 @@ $(function() {
         };
 
 		self.addSidebar = function(data) {
-			self.settings.settings.plugins.sidebarorder.sidebars.push({'name':ko.observable('')});
+			self.settings.settings.plugins.sidebarorder.sidebars.push({'name':ko.observable(''),'icon':ko.observable(''),'showtext':ko.observable(true)});
             self.sidebars(self.settings.settings.plugins.sidebarorder.sidebars());
 		}
 		

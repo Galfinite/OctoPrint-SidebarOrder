@@ -9,12 +9,21 @@ class sidebarorder(octoprint.plugin.AssetPlugin,
 	
 	##-- AssetPlugin mixin
 	def get_assets(self):
-		return dict(js=["js/sidebarorder.js"],
+		return dict(js=["js/sidebarorder.js","js/font-awesome.min.css"],
 					css=["css/sidebarorder.css"])
 		
 	##-- Settings mixin
 	def get_settings_defaults(self):
-		return dict(sidebars=[{'name':'connection'},{'name':'state'},{'name':'files'}])
+		return dict(sidebars=[{'name':'connection','icon':'','showtext':True},{'name':'state','icon':'','showtext':True},{'name':'files','icon':'','showtext':True}])
+		
+	def get_settings_version(self):
+		return 1
+		
+	def on_settings_migrate(self, target, current=None):
+		if current is None or current < self.get_settings_version():
+			# Reset plug settings to defaults.
+			self._logger.debug("Resetting SideBarOrder Tabs to default.")
+			self._settings.set(['sidebars'], self.get_settings_defaults()["sidebars"])
 		
 	def on_settings_save(self, data):
 		old_sidebars = self._settings.get(["sidebars"])
@@ -46,12 +55,12 @@ class sidebarorder(octoprint.plugin.AssetPlugin,
 
 				# version check: github repository
 				type="github_release",
-				user="zoombahh",
+				user="galfinite",
 				repo="OctoPrint-SidebarOrder",
 				current=self._plugin_version,
 
 				# update method: pip
-				pip="https://github.com/zoombahh/OctoPrint-SidebarOrder/archive/{target_version}.zip"
+				pip="https://github.com/galfinite/OctoPrint-SidebarOrder/archive/{target_version}.zip"
 			)
 		)
 
